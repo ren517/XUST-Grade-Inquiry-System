@@ -27,24 +27,26 @@
 
 用户文件中保存类似：
 
-````json
+```json
 {
-    "name": "张三",
-    "xh": "24403120101",
-    "password": "gAAAAABxxxxx"
+  "name": "张三",
+  "xh": "24403120101",
+  "password": "gAAAAABxxxxx"
 }
-
+```
 
 ## ✨ 使用方法
+
 Python版本推荐：
 Python >= 3.10
 
 安装依赖
 
 执行：
+
 ```bash
 pip install -r requirements.txt
-````
+```
 
 第一次运行:
 执行：
