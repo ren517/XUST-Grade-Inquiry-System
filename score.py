@@ -15,8 +15,8 @@ def select_score(session, name):
     url = BASE_URL + "cjcx/cjcx_cxXsgrcj.html?" "doType=query&gnmkdm=N305005"
 
     data = {
-        "xnm": "2025",
-        "xqm": "12",
+        "xnm": "2025",  # 2025-2026学年
+        "xqm": "12",  # 2025-2026学年第2学期
         "_search": "false",
         "nd": int(time.time() * 1000),
         "queryModel.showCount": "100",
