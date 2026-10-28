@@ -1,8 +1,47 @@
+import sys
+
 from cookie_manager import *
 from score import *
 from history import *
 from login import *
 from crypto import *
+from ids_login import IdsLogin
+from jwsso_login import JwssoLogin
+
+# ======================
+# 登录入口
+# ======================
+# 默认 legacy：老教务系统 RSA 登录，行为与改造前完全一致
+# 可选 ids / jwsso：统一认证新入口，只在登录换 cookie 这一步不同
+
+DEFAULT_ENTRY = "legacy"
+
+
+def get_entry(user):
+
+    entry = user.get("entry") or DEFAULT_ENTRY
+
+    for a in sys.argv[1:]:
+
+        if a.startswith("--entry="):
+
+            entry = a.split("=", 1)[1]
+
+    return entry
+
+
+def create_client(entry):
+
+    if entry == "ids":
+
+        return IdsLogin()
+
+    if entry == "jwsso":
+
+        return JwssoLogin()
+
+    return JWXTLogin()
+
 
 users = load_users()
 
@@ -52,16 +91,27 @@ user = users[int(choice) - 1]
 print("当前用户:", user["name"])
 
 
+# 登录入口（legacy 时为空，保持老 cookie 文件名）
+
+entry = get_entry(user)
+
+if entry != DEFAULT_ENTRY:
+
+    print("登录入口:", entry)
+
+
 # 创建登录对象
 
-login_client = JWXTLogin()
+login_client = create_client(entry)
+
+cookie_entry = None if entry == DEFAULT_ENTRY else entry
 
 
 # ======================
 # 尝试读取Cookie
 # ======================
 
-has_cookie = load_cookie(login_client.session, user["xh"])
+has_cookie = load_cookie(login_client.session, user["xh"], cookie_entry)
 
 
 if has_cookie:
@@ -86,7 +136,7 @@ if has_cookie:
 
             exit()
 
-        save_cookie(login_client.session, user["xh"])
+        save_cookie(login_client.session, user["xh"], cookie_entry)
 
 
 else:
@@ -103,7 +153,7 @@ else:
 
         exit()
 
-    save_cookie(login_client.session, user["xh"])
+    save_cookie(login_client.session, user["xh"], cookie_entry)
 
 
 print("登录成功")

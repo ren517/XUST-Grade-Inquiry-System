@@ -54,20 +54,33 @@ def save_user(name, xh, info):
 # =====================
 
 
-def save_cookie(session, xh):
+def cookie_path(xh, entry=None):
+    """
+    Cookie文件名
+
+    entry 为空时保持老入口的 cookies/<xh>.json，
+    新入口用 cookies/<entry>_<xh>.json，两套缓存互不覆盖
+    """
+
+    name = f"{entry}_{xh}.json" if entry else f"{xh}.json"
+
+    return f"{COOKIE_DIR}/{name}"
+
+
+def save_cookie(session, xh, entry=None):
 
     init()
 
     cookies = session.cookies.get_dict()
 
-    with open(f"{COOKIE_DIR}/{xh}.json", "w", encoding="utf-8") as f:
+    with open(cookie_path(xh, entry), "w", encoding="utf-8") as f:
 
         json.dump(cookies, f, indent=4)
 
 
-def load_cookie(session, xh):
+def load_cookie(session, xh, entry=None):
 
-    path = f"{COOKIE_DIR}/{xh}.json"
+    path = cookie_path(xh, entry)
 
     if not os.path.exists(path):
 
@@ -82,9 +95,9 @@ def load_cookie(session, xh):
     return True
 
 
-def clear_cookie(xh):
+def clear_cookie(xh, entry=None):
 
-    path = f"{COOKIE_DIR}/{xh}.json"
+    path = cookie_path(xh, entry)
 
     if os.path.exists(path):
 
